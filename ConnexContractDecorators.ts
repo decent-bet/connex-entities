@@ -6,10 +6,7 @@ import { timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { BigNumber } from 'bignumber.js';
 import { ContractService } from './ContractService';
-import { IValidationType, INewConnexContract } from './types';
-import { IConnexMethodOrEventCall } from './IConnexMethodOrEventCall';
-import { IConnexEventFilter } from './IConnexEventFilter';
-import { IConnexBlockchainEventFilter } from './IConnexBlockchainEventFilter';
+import { IValidationType, INewConnexContract, IConnexMethodOrEventCall, IConnexEventFilter, IConnexBlockchainEventFilter } from './types';
 
 const ethereumRegex = require('ethereum-regex');
 
