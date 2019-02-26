@@ -2,7 +2,7 @@
 /// <reference types="@vechain/connex" />
 
 import { abi } from 'thor-devkit';
-import { ContractImport } from './ContractImport';
+import { ContractImport } from './types';
 import { ConnexService } from './ConnexService';
 
 /**

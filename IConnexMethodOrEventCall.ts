@@ -1,6 +1,5 @@
 import { abi } from 'thor-devkit';
-import { IValidationParams } from './IValidationParams';
-import { ConnexCallResponseEnums } from './ConnexCallResponseEnums';
+import { IValidationParams, ConnexCallResponseEnums } from './types';
 /**
  * Defines the Connex method and event call parameters
  */
