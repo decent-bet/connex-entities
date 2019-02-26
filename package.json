@@ -1,0 +1,37 @@
+{
+  "name": "connex-entities",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/decent-bet/connex-entities.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/decent-bet/connex-entities/issues"
+  },
+  "homepage": "https://github.com/decent-bet/connex-entities#readme",
+  "devDependencies": {
+    "@types/jest": "^24.0.9",
+    "@types/node": "^11.9.5",
+    "@vechain/connex": "^1.1.0",
+    "nodemon": "^1.18.10",
+    "ts-jest": "^24.0.0",
+    "ts-node": "^8.0.2",
+    "typescript": "^3.3.3333"
+  },
+  "dependencies": {
+    "bignumber.js": "^8.1.1",
+    "ethereum-regex": "^1.1.5",
+    "rxjs": "^6.4.0",
+    "thor-devkit": "^0.8.1"
+  }
+}
