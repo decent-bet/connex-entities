@@ -7,11 +7,12 @@
         "moduleResolution": "node",
         "sourceMap": false,
         "outDir": "lib",
+        "experimentalDecorators": true,
         "baseUrl": ".",
         "paths": {
             "*": ["node_modules/*", "src/types/*"]
         }
     },
-    "include": ["**/*"],
+    "include": ["src/**/*", "jest.config.js"],
     "exclude": ["node_modules", "**/*.spec.ts"]
 }
