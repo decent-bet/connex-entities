@@ -7,8 +7,8 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+    "test": "jest --watch"
+    },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/decent-bet/connex-entities.git"
@@ -23,6 +23,7 @@
     "@types/jest": "^24.0.9",
     "@types/node": "^11.9.5",
     "@vechain/connex": "^1.1.0",
+    "jest": "^24.1.0",
     "nodemon": "^1.18.10",
     "ts-jest": "^24.0.0",
     "ts-node": "^8.0.2",
