@@ -61,7 +61,12 @@ export class ContractService {
     eventNameOrAbi: abi.Event.Definition | string,
     address?: string
   ): Connex.Thor.EventVisitor {
-    const acc = ConnexService.instance.thor.account(address || this.address);
+    let addr;
+    if (!address) {
+      addr = this.contractImport.address[ConnexService.chainTag];
+    }
+    const acc = ConnexService.instance.thor.account(address || addr);
+
     let eventAbi: abi.Event.Definition | string = eventNameOrAbi;
     if (typeof eventNameOrAbi === 'string') {
       eventAbi = this.abi.filter(i => i.name === eventNameOrAbi)[0] as abi.Event.Definition;

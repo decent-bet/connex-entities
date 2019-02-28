@@ -211,19 +211,23 @@ export function AccountEventFilter(options: IConnexEventFilter) {
       const eventInstance = this.contractService
         .getEvent(options.nameOrAbi || propertyKey, addr);
 
+      let filter;
       // Read filter indexed parameters
       //      const opts = args[args.length - 1];
       //      const keys = Object.keys(opts.indexed);
-      const arr = args.slice(0, args.length - 2);
+      if (options.skipIndices) {
+        filter = eventInstance.filter([]);
+      } else {
+        const arr = args.slice(0, args.length - 2);
 
-      // Validate
-      if (options.validations) {
-        validate(options.validations, arr);
+        // Validate
+        if (options.validations) {
+          validate(options.validations, arr);
+        }
+
+        // create filter
+        filter = eventInstance.filter(arr);
       }
-
-      // create filter
-      const filter = eventInstance.filter(arr);
-
       // apply filter and get thunk
       const thunk = original.apply(this, args);
 

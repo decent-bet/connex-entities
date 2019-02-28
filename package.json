@@ -1,6 +1,6 @@
 {
   "name": "@decent-bet/connex-entities",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Connex entity contracts allows mapping of contract entities",
   "main": "lib/index.js",
   "directories": {
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "jest --watch"
-    },
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/decent-bet/connex-entities.git"
