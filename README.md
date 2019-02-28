@@ -163,7 +163,7 @@ A contract event filter, it can run once or by polling. A thunk function  is req
     nameOrAbi: 'Transfer',
     interval: 10_000,
   })
-  public getTransfers$(index1, index2, options: AccountEventFilterOptions) {
+  public getTransfers$(indices: Array<object>, options: AccountEventFilterOptions) {
     return (filter: Connex.Thor.Filter<'event'>) => {
       filter.order('asc');
 
@@ -175,7 +175,7 @@ A contract event filter, it can run once or by polling. A thunk function  is req
     nameOrAbi: 'Transfer',
     address: () => EnergyContractImport.address[ConnexService.chainTag],
   })
-  public getTransfers(index, options: AccountEventFilterOptions) {
+  public getTransfers(indices: Array<object>, options: AccountEventFilterOptions) {
     return (filter: Connex.Thor.Filter<'event'>) => {
       filter
         .order('asc')
