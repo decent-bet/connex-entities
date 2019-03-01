@@ -207,3 +207,21 @@ Polls an event or transfer. A thunk function  is required which gets a Filter in
     };
   }
 ```
+
+
+#### Utils
+##### @GetEventSignature
+Returns an event signature
+```typescript
+  @GetEventSignature()
+  public Transfer() {
+  }
+```
+
+##### @GetMethodSignature
+Returns a method signature
+```typescript
+  @GetMethodSignature()
+  public transfer() {
+  }
+```

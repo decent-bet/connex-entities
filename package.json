@@ -1,6 +1,6 @@
 {
   "name": "@decent-bet/connex-entities",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Connex entity contracts allows mapping of contract entities",
   "main": "lib/index.js",
   "directories": {
@@ -32,6 +32,7 @@
   "dependencies": {
     "bignumber.js": "^8.1.1",
     "ethereum-regex": "^1.1.5",
+    "js-sha3": "^0.8.0",
     "rxjs": "^6.4.0",
     "thor-devkit": "^0.8.1"
   }

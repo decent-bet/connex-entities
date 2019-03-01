@@ -31,6 +31,18 @@ export class ContractService {
     this.abi = val.abi;
   }
 
+  public getAbiMethod(
+    name: string,
+    address?: string
+  ): object {
+    let addr;
+    if (!address) {
+      addr = this.contractImport.address[ConnexService.chainTag];
+    }
+    const acc = ConnexService.instance.thor.account(address || addr);
+    return this.abi.filter(i => i.name === name)[0];
+  }
+  
   /**
    * Gets a Connex Method object
    * @param address contract address

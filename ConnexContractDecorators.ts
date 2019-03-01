@@ -7,6 +7,7 @@ import { switchMap } from 'rxjs/operators';
 import { BigNumber } from 'bignumber.js';
 import { ContractService } from './ContractService';
 import { IValidationType, INewConnexContract, IConnexMethodOrEventCall, IConnexEventFilter, IConnexBlockchainEventFilter } from './types';
+import { AbiUtils } from './Utils';
 
 const ethereumRegex = require('ethereum-regex');
 
@@ -46,6 +47,42 @@ function validate(params: { [key: string]: IValidationType }, values: any[]): bo
 
   return true;
 }
+
+export function GetMethodSignature() {
+  return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+    descriptor.value = function () {
+      const abiMethod = this.contractService.getAbiMethod(propertyKey, null);
+
+      let temp = `${propertyKey}()`;
+      const types = abiMethod.inputs.map(i => i.type);
+      if (types.length > 0) {
+        temp  = `${propertyKey}(${types.join(',')})`;
+      }
+
+      return AbiUtils.encodeFunctionSignature(temp);
+    };
+    return descriptor;
+  };
+}
+
+export function GetEventSignature() {
+  return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+    descriptor.value = function () {
+      const abiMethod = this.contractService.getAbiMethod(propertyKey, null);
+
+      let temp = `${propertyKey}()`;
+      const types = abiMethod.inputs.map(i => i.type);
+      if (types.length > 0) {
+        temp  = `${propertyKey}(${types.join(',')})`;
+      }
+
+      return AbiUtils.encodeEventSignature(temp);
+    };
+    return descriptor;
+  };
+}
+
+
 /**
  * Annotates a Connex thor.method call
  * @param options An IConnexMethodOrEventCall props
