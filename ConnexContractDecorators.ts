@@ -54,7 +54,7 @@ export function GetMethodSignature() {
       const abiMethod = this.contractService.getAbiMethod(propertyKey, null);
 
       let temp = `${propertyKey}()`;
-      const types = abiMethod.inputs.map(i => i.type);
+      const types = abiMethod.inputs.map((i: any) => i.type);
       if (types.length > 0) {
         temp  = `${propertyKey}(${types.join(',')})`;
       }
@@ -71,7 +71,7 @@ export function GetEventSignature() {
       const abiMethod = this.contractService.getAbiMethod(propertyKey, null);
 
       let temp = `${propertyKey}()`;
-      const types = abiMethod.inputs.map(i => i.type);
+      const types = abiMethod.inputs.map((i: any) => i.type);
       if (types.length > 0) {
         temp  = `${propertyKey}(${types.join(',')})`;
       }
