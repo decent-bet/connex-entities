@@ -34,6 +34,7 @@ export interface IConnexEventFilter {
     address?: Function;
     interval?: number | null;
     validations?: IValidationParams;
+    skipIndices?: boolean;
 }
   
 import { ContractService } from './ContractService';

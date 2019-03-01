@@ -13,6 +13,6 @@
             "*": ["node_modules/*", "src/types/*"]
         }
     },
-    "include": ["src/**/*", "jest.config.js"],
-    "exclude": ["node_modules", "**/*.spec.ts"]
+    "include": ["**/*.ts", "jest.config.js"],
+    "exclude": ["node_modules", "**/*.spec.ts", "examples"]
 }
