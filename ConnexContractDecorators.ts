@@ -160,9 +160,16 @@ export function Write(options: IConnexMethodOrEventCall = {}) {
       signingService
         .gas(options.gas || 80000); // Set maximum gas
 
-      const clause = this.contractService
+      
+      const method = this.contractService
         .getMethod(options.nameOrAbi || propertyKey, addr)
-        .asClause(...args);
+      
+      let clause
+      if (args.length === 1) {
+        clause = method.asClause(args);
+      }
+      clause = method.asClause(...args);
+      
       return signingService.request([
         {
           comment: `${propertyKey} write call`,
