@@ -166,7 +166,7 @@ export function Write(options: IConnexMethodOrEventCall = {}) {
       
       let clause
       if (args.length === 1) {
-        clause = method.asClause(args);
+        clause = method.asClause(args[0]);
       }
       clause = method.asClause(...args);
       
