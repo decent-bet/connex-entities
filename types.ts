@@ -49,3 +49,8 @@ export interface IConnexBlockchainEventFilter {
     kind?: 'event' | 'transfer';
 }
   
+
+export interface ContractSetting {
+  name: string;
+  contract: any;
+}
