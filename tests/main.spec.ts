@@ -3,7 +3,9 @@ import {
     GetMethod,
     Read,
     GetEventSignature,
-    GetMethodSignature
+    GetMethodSignature,
+    Write,
+    AccountEventFilter
 } from '../ConnexContractDecorators';
 import { ContractService } from '../ContractService';
 import { EnergyTokenContract } from '../examples/EnergyContractService';
@@ -115,14 +117,15 @@ describe('Connex Entities', () => {
         });
 
         it('should create a Read() and return an object', async () => {
+            const callMock = jest.fn(i =>
+                Promise.resolve({ decoded: { 0: true } })
+            );
             // Mock
             const obj = {
                 contractService: {
                     getMethod: jest.fn(i => {
                         return {
-                            call: jest.fn(i =>
-                                Promise.resolve({ decoded: { 0: true } })
-                            )
+                            call: callMock
                         };
                     })
                 }
@@ -134,6 +137,7 @@ describe('Connex Entities', () => {
 
             const promise = await pd.value.bind(obj)();
             expect(obj.contractService.getMethod.mock.calls.length).toBe(1);
+            expect(callMock.mock.calls.length).toBe(1);
         });
 
         it('should create a GetEventSignature() and return a string', async () => {
@@ -168,10 +172,72 @@ describe('Connex Entities', () => {
 
             const signature = await pd.value.bind(obj)();
             expect(signature).toBe(
-                AbiUtils.encodeFunctionSignature(
-                    `transfer(address,uint256)`
-                )
+                AbiUtils.encodeFunctionSignature(`transfer(address,uint256)`)
             );
+        });
+
+        it('should create a Write() and return a Promise', async () => {
+            const gasMock = jest.fn();
+            const requestMock = jest.fn();
+            const clauseMock = jest.fn();
+            // Mock
+            const obj = {
+                contractService: {
+                    getMethod: jest.fn(i => {
+                        return {
+                            asClause: clauseMock
+                        };
+                    }),
+                    getSigningService: jest.fn(i => {
+                        return {
+                            gas: gasMock,
+                            request: requestMock
+                        };
+                    })
+                }
+            };
+            const descriptor = Write();
+            const original = {};
+            const pd = descriptor(null, 'transfer', original);
+
+            await pd.value.bind(obj)();
+
+            expect(obj.contractService.getMethod.mock.calls.length).toBe(1);
+            expect(gasMock.mock.calls.length).toBe(1);
+            expect(clauseMock.mock.calls.length).toBe(1);
+            expect(requestMock.mock.calls.length).toBe(1);
+        });
+
+        it('should create a AccountEventFilter() with an interval and return an Observable', async () => {
+            const filterMock = jest.fn();
+            // Mock
+            const obj = {
+                contractService: {
+                    getEvent: jest.fn(i => {
+                        return {
+                            filter: filterMock
+                        };
+                    })
+                }
+            };
+            const descriptor = AccountEventFilter({
+                nameOrAbi: 'Transfer',
+                interval: 10_000
+            });
+
+            const applyMock = jest.fn();
+            const original = {
+                value: {
+                    apply: applyMock
+                }
+            };
+            const pd = descriptor(null, 'transfer', original);
+
+            await pd.value.bind(obj)();
+
+            expect(obj.contractService.getEvent.mock.calls.length).toBe(1);
+            expect(filterMock.mock.calls.length).toBe(1);
+            expect(applyMock.mock.calls.length).toBe(1);
         });
     });
 });
