@@ -4,8 +4,13 @@
 Connex entity contracts allows mapping of contract entities and uses a middleware (Vue plugin) to connect
 to Comet and Connex.
 
+### Middleware
 
-### Bootstrapping
+### Vue 
+
+`npm i -S @decent-bet/vue-connex-entities`
+
+More info: `https://github.com/decent-bet/vue-connex-entities`
 
 #### Adding Contract Entities to plugin middleware
 ```typescript
@@ -15,36 +20,6 @@ Vue.use(ConnexEntityContract, {
       { name: 'DBET', contract: DBETVETTokenContract }
     ]
 });
-```
-
-#### Creating Contract Import
-```typescript
-const EnergyTokenContractAbi = require('./Energy');
-
-const EnergyContractImport: ContractImport = {
-  raw: {
-    abi: EnergyTokenContractAbi.abi
-  },
-  address: {
-    '0x27': '0x0000000000000000000000000000456E65726779',
-    '0x4a': '0x0000000000000000000000000000456E65726779'
-  }
-};
-
-```
-
-#### Create Contract Entity
-A contract entity maps to a contract import using the `@ConnexContract` and inherits a `ContractService` instance. An `IConnexContract` interface is required to access this property.
-
-```typescript
-
-@ConnexContract({
-  import: EnergyContractImport
-})
-export class EnergyTokenContract implements IConnexContract {
-  contractService: ContractService;
-  // ...
-}
 ```
 
 #### Requesting Connex and Comet
@@ -64,16 +39,38 @@ The following instance variables are available:
   }
 ```
 
+#### Contract Import
+```typescript
+const EnergyTokenContractAbi = require('./Energy');
+
+const EnergyContractImport: ContractImport = {
+  raw: {
+    abi: EnergyTokenContractAbi.abi
+  },
+  address: {
+    '0x27': '0x0000000000000000000000000000456E65726779',
+    '0x4a': '0x0000000000000000000000000000456E65726779'
+  }
+};
+
+```
+
 ### API
 
-#### Contract Class
-Maps an ABI to a contract class
+#### @ConnexContract and IConnexContract
+A contract entity maps to a contract import using the `@ConnexContract` and inherits a `ContractService` instance. An `IConnexContract` interface is required to access this property.
 
 ```typescript
+
 @ConnexContract({
   import: EnergyContractImport
 })
+export class EnergyTokenContract implements IConnexContract {
+  contractService: ContractService;
+  // ...
+}
 ```
+
 
 #### Contract Methods
 ##### @GetMethod
