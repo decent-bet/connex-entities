@@ -75,7 +75,7 @@ export class EnergyTokenContract implements IConnexContract {
 #### Contract Methods
 ##### @GetMethod
 
-Returns a `Connex.Thor.VMOutput` instance.
+Returns a `Connex.Thor.Method` instance.
 ```typescript
   @GetMethod({
     nameOrAbi: 'balanceOf',
@@ -122,7 +122,7 @@ Returns a Promise with the result of a signing execution.
     gas: 90_000
   })
   public transferMethod(address: string, wei: BigNumber, world: BigNumber): any {
-    return (m: Connex.Thor.VMOutput) => {
+    return (m: Connex.Thor.Method) => {
       return [{
         comment: 'Hello',
         ...m.asClause(address, wei)
