@@ -51,11 +51,11 @@ import { ContractService } from './ContractService';
  */
 export interface IConnexContract {
     contractService: ContractService;
-    constructor: (
+    onConnexReady: (
         connex: Connex,
         chainTag: string,
         defaultAccount: string
-    ) => Function;
+    ) => void;
 }
 export interface IConnexBlockchainEventFilter {
     interval?: number | null;

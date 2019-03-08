@@ -19,6 +19,12 @@ export class ContractService {
     }
   }
 
+  __setConnexReady(connex: Connex, chainTag: string, defaultAccount: string) {
+    this.connex = connex;
+    this.chainTag = chainTag;
+    this.defaultAccount = defaultAccount;
+  }
+
   public setAbi(val: any) {
     this.abi = val.abi;
   }

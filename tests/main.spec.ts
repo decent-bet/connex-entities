@@ -92,7 +92,10 @@ const abiEvent = {
 class Test implements IConnexContract {
     contractService: ContractService
 
-    constructor(connex: Connex, chainTag: string, defaultAccount: string){}
+    constructor(){}
+
+    onConnexReady(connex: Connex, chainTag: string, defaultAccount: string) {
+    }
 }
 
 describe('Connex Entities', () => {
@@ -101,7 +104,8 @@ describe('Connex Entities', () => {
             const connex = {} as Connex;
             const chainTag = '0xa4';
             const defaultAccount = '0x';
-            const instance = (new Test(connex, chainTag, defaultAccount) as any).contractService;
+            const instance = (new Test() as any).contractService;
+            instance.__setConnexReady(connex, chainTag, defaultAccount);
             expect(instance instanceof ContractService).toBe(true);
         });
 
