@@ -155,7 +155,8 @@ export function Write(options: IConnexMethodOrEventCall = {}) {
         addr = options.address();
       }
 
-      const signingService = this.connex.vendor.sign('tx')
+      const connex = this.contractService.connex;
+      const signingService = connex.vendor.sign('tx')
         .signer(this.defaultAccount)
         .gas(options.gas || 80000); // Set maximum gas
 
@@ -198,9 +199,10 @@ export function MultiClauseWrite(options: IConnexMethodOrEventCall = {}) {
         addr = options.address();
       }
 
-      const signingService = this.connex.vendor.sign('tx')
-      .signer(this.defaultAccount)
-      .gas(options.gas || 80000); // Set maximum gas
+      const connex = this.contractService.connex;
+      const signingService = connex.vendor.sign('tx')
+        .signer(this.defaultAccount)
+        .gas(options.gas || 80000); // Set maximum gas
 
       const m = this.contractService
         .getMethod(options.nameOrAbi || propertyKey, addr);

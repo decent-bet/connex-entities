@@ -200,16 +200,16 @@ describe('Connex Entities', () => {
             })
             // Mock
             const obj = {
-                connex: {
-                    vendor: {
-                        sign: jest.fn(() => {
-                            return {
-                                signer: signerMock
-                            }
-                        })
-                    }
-                },
                 contractService: {
+                    connex: {
+                        vendor: {
+                            sign: jest.fn(() => {
+                                return {
+                                    signer: signerMock
+                                }
+                            })
+                        }
+                    },
                     getMethod: jest.fn(i => {
                         return {
                             asClause: clauseMock
