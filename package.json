@@ -1,6 +1,6 @@
 {
   "name": "@decent-bet/connex-entities",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Connex entity contracts allows mapping of contract entities",
   "main": "lib/index.js",
   "directories": {
