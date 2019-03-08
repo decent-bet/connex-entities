@@ -3,28 +3,20 @@
 
 import { abi } from 'thor-devkit';
 import { ContractImport } from './types';
-import { ConnexService } from './ConnexService';
 
 /**
  * Implements Connex helpers used either directly or with Connex contract decorators
  */
 export class ContractService {
-  private address: string;
-
   private abi: Array<abi.Function.Definition | abi.Event.Definition>;
-
-  constructor(private contractImport: ContractImport, private chainTag?: string) {
+  public defaultAccount: string;
+  public connex: Connex;
+  public chainTag: string;
+  
+  constructor(private contractImport: ContractImport) {
     if (contractImport.raw) {
       this.setAbi(contractImport.raw);
     }
-  }
-
-  public getSigningService() {
-    return ConnexService.getDefaultAccountSigningService();
-  }
-
-  public setAddress(address: string) {
-    this.address = address;
   }
 
   public setAbi(val: any) {
@@ -37,9 +29,9 @@ export class ContractService {
   ): object {
     let addr;
     if (!address) {
-      addr = this.contractImport.address[ConnexService.chainTag];
+      addr = this.contractImport.address[this.chainTag];
     }
-    const acc = ConnexService.instance.thor.account(address || addr);
+    const acc = this.connex.thor.account(address || addr);
     return this.abi.filter(i => i.name === name)[0];
   }
   
@@ -54,9 +46,9 @@ export class ContractService {
   ): Connex.Thor.Method {
     let addr;
     if (!address) {
-      addr = this.contractImport.address[ConnexService.chainTag];
+      addr = this.contractImport.address[this.chainTag];
     }
-    const acc = ConnexService.instance.thor.account(address || addr);
+    const acc = this.connex.thor.account(address || addr);
     let methodAbi: abi.Function.Definition | string = methodNameOrAbi;
     if (typeof methodNameOrAbi === 'string') {
       methodAbi = this.abi.filter(i => i.name === methodNameOrAbi)[0] as abi.Function.Definition;
@@ -75,9 +67,9 @@ export class ContractService {
   ): Connex.Thor.EventVisitor {
     let addr;
     if (!address) {
-      addr = this.contractImport.address[ConnexService.chainTag];
+      addr = this.contractImport.address[this.chainTag];
     }
-    const acc = ConnexService.instance.thor.account(address || addr);
+    const acc = this.connex.thor.account(address || addr);
 
     let eventAbi: abi.Event.Definition | string = eventNameOrAbi;
     if (typeof eventNameOrAbi === 'string') {
