@@ -45,12 +45,15 @@ export interface IConnexEventFilter {
     skipIndices?: boolean;
 }
 
-import { ContractService } from './ContractService';
 /**
  * Defines a Connex contract interface
  */
 export interface IConnexContract {
-    contractService: ContractService;
+    defaultAccount: string;
+    connex: Connex;
+    chainTag: string;
+}
+export interface IConnexOnReady {
     onConnexReady: (
         connex: Connex,
         chainTag: string,
