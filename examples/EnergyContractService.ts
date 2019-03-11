@@ -1,9 +1,10 @@
 import { BigNumber } from 'bignumber.js';
 import { ContractImport, IConnexContract } from '@decent-bet/connex-entities/types';
 import {
-  ConnexContract, GetMethod, Write, ContractService, Read,
+  ConnexContract, GetMethod, Write, OnConnexReady, Read,
   BlockchainEventFilter
 } from '@decent-bet/connex-entities';
+
 
 const EnergyTokenContractAbi = require('./Energy');
 
@@ -20,9 +21,13 @@ const EnergyContractImport: ContractImport = {
 @ConnexContract({
   import: EnergyContractImport
 })
-export class EnergyTokenContract implements IConnexContract {
-  contractService: ContractService;
+export class EnergyTokenContract extends OnConnexReady {
 
+  constructor() {
+    super();
+  }
+
+   
   @GetMethod({
     nameOrAbi: 'balanceOf',
   })
