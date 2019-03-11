@@ -199,7 +199,6 @@ describe('Connex Entities', () => {
                                 signer: signerMock,
                                 gas: gasMock,
                                 request: requestMock
-
                             }
                         })
                     }
