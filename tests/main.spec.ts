@@ -8,7 +8,6 @@ import {
     Write,
     AccountEventFilter
 } from '../ConnexContractDecorators';
-import { ContractService } from '../ContractService';
 import { EnergyTokenContract } from '../examples/EnergyContractService';
 import { IConnexMethodOrEventCall, IConnexContract } from '../types';
 import { AbiUtils } from '../Utils';
@@ -197,7 +196,9 @@ describe('Connex Entities', () => {
                     vendor: {
                         sign: jest.fn(() => {
                             return {
-                                signer: signerMock
+                                signer: signerMock,
+                                gas: gasMock,
+                                request: requestMock
                             }
                         })
                     }
