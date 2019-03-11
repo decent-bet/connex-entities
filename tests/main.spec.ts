@@ -1,4 +1,4 @@
-import { BaseConnexContract, OnConnexReady } from './../BaseConnexContract';
+import { OnConnexReady } from './../BaseConnexContract';
 import {
     ConnexContract,
     GetMethod,
