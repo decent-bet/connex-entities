@@ -1,3 +1,4 @@
+import { OnConnexReady } from './../BaseConnexContract';
 import {
     ConnexContract,
     GetMethod,
@@ -7,9 +8,8 @@ import {
     Write,
     AccountEventFilter
 } from '../ConnexContractDecorators';
-import { ContractService } from '../ContractService';
 import { EnergyTokenContract } from '../examples/EnergyContractService';
-import { IConnexMethodOrEventCall } from '../types';
+import { IConnexMethodOrEventCall, IConnexContract } from '../types';
 import { AbiUtils } from '../Utils';
 
 const abiMethod = {
@@ -89,23 +89,32 @@ const abiEvent = {
         }
     }
 })
-class Test {}
+class Test extends OnConnexReady {
+
+    constructor(){
+        super();
+    }
+
+}
 
 describe('Connex Entities', () => {
     describe('#ConnexContract', () => {
-        it('should create a class with a ContractService property', async () => {
-            const instance = (new Test() as any).contractService;
-            expect(instance instanceof ContractService).toBe(true);
+        it('should create a class that inherits from BaseConnexContract', async () => {
+            const connex = {} as Connex;
+            const chainTag = '0xa4';
+            const defaultAccount = '0x';
+            const instance = (new Test() as any);
+            instance.onConnexReady(connex, chainTag, defaultAccount);
+            expect(instance.chainTag).toBe(chainTag);
+            expect(instance.defaultAccount).toBe(defaultAccount);            
         });
 
         it('should create a GetMethod() and return a Connex.Thor.VMOutput', async () => {
             // Mock
             const obj = {
-                contractService: {
-                    getMethod: jest.fn((name, add) => {
-                        return Promise.resolve({} as Connex.Thor.VMOutput);
-                    })
-                }
+                getMethod: jest.fn((name, add) => {
+                    return Promise.resolve({} as Connex.Thor.VMOutput);
+                })
             };
             const options: IConnexMethodOrEventCall = {};
             const descriptor = GetMethod(options);
@@ -113,7 +122,7 @@ describe('Connex Entities', () => {
             const pd = descriptor(null, 'balanceOf', original);
 
             const promise = pd.value.bind(obj)();
-            expect(obj.contractService.getMethod.mock.calls.length).toBe(1);
+            expect(obj.getMethod.mock.calls.length).toBe(1);
         });
 
         it('should create a Read() and return an object', async () => {
@@ -122,13 +131,11 @@ describe('Connex Entities', () => {
             );
             // Mock
             const obj = {
-                contractService: {
-                    getMethod: jest.fn(i => {
-                        return {
-                            call: callMock
-                        };
-                    })
-                }
+                getMethod: jest.fn(i => {
+                    return {
+                        call: callMock
+                    };
+                })
             };
             const options: IConnexMethodOrEventCall = {};
             const descriptor = Read(options);
@@ -136,16 +143,14 @@ describe('Connex Entities', () => {
             const pd = descriptor(null, 'balanceOf', original);
 
             const promise = await pd.value.bind(obj)();
-            expect(obj.contractService.getMethod.mock.calls.length).toBe(1);
+            expect(obj.getMethod.mock.calls.length).toBe(1);
             expect(callMock.mock.calls.length).toBe(1);
         });
 
         it('should create a GetEventSignature() and return a string', async () => {
             // Mock
             const obj = {
-                contractService: {
-                    getAbiMethod: () => abiEvent
-                }
+                getAbiMethod: () => abiEvent
             };
             const descriptor = GetEventSignature();
             const original = {};
@@ -162,9 +167,7 @@ describe('Connex Entities', () => {
         it('should create a GetMethodSignature() and return a string', async () => {
             // Mock
             const obj = {
-                contractService: {
-                    getAbiMethod: () => abiMethod
-                }
+                getAbiMethod: () => abiMethod
             };
             const descriptor = GetMethodSignature();
             const original = {};
@@ -180,21 +183,31 @@ describe('Connex Entities', () => {
             const gasMock = jest.fn();
             const requestMock = jest.fn();
             const clauseMock = jest.fn();
-            // Mock
-            const obj = {
-                contractService: {
-                    getMethod: jest.fn(i => {
-                        return {
-                            asClause: clauseMock
-                        };
-                    }),
-                    getSigningService: jest.fn(i => {
-                        return {
-                            gas: gasMock,
-                            request: requestMock
-                        };
+            const signerMock = jest.fn(() => {
+                return {
+                    gas: jest.fn(() => {
+                        return { request: jest.fn() }
                     })
                 }
+            })
+            // Mock
+            const obj = {
+                connex: {
+                    vendor: {
+                        sign: jest.fn(() => {
+                            return {
+                                signer: signerMock,
+                                gas: gasMock,
+                                request: requestMock
+                            }
+                        })
+                    }
+                },
+                getMethod: jest.fn(i => {
+                    return {
+                        asClause: clauseMock
+                    };
+                }),
             };
             const descriptor = Write();
             const original = {};
@@ -202,23 +215,20 @@ describe('Connex Entities', () => {
 
             await pd.value.bind(obj)();
 
-            expect(obj.contractService.getMethod.mock.calls.length).toBe(1);
-            expect(gasMock.mock.calls.length).toBe(1);
+            expect(obj.getMethod.mock.calls.length).toBe(1);
+            expect(signerMock.mock.calls.length).toBe(1);
             expect(clauseMock.mock.calls.length).toBe(1);
-            expect(requestMock.mock.calls.length).toBe(1);
         });
 
         it('should create a AccountEventFilter() with an interval and return an Observable', async () => {
             const filterMock = jest.fn();
             // Mock
             const obj = {
-                contractService: {
-                    getEvent: jest.fn(i => {
-                        return {
-                            filter: filterMock
-                        };
-                    })
-                }
+                getEvent: jest.fn(i => {
+                    return {
+                        filter: filterMock
+                    };
+                })
             };
             const descriptor = AccountEventFilter({
                 nameOrAbi: 'Transfer',
@@ -235,7 +245,7 @@ describe('Connex Entities', () => {
 
             await pd.value.bind(obj)();
 
-            expect(obj.contractService.getEvent.mock.calls.length).toBe(1);
+            expect(obj.getEvent.mock.calls.length).toBe(1);
             expect(filterMock.mock.calls.length).toBe(1);
             expect(applyMock.mock.calls.length).toBe(1);
         });
