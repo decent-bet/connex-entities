@@ -57,14 +57,14 @@ const EnergyContractImport: ContractImport = {
 ### API
 
 #### @ConnexContract
-A contract entity maps to a contract import using the `@ConnexContract` and base class `OnConnexReady`, which has an `IConnexContract` interface.
+A contract entity maps to a contract import using the `@ConnexContract`, which has an `IConnexContract` interface and `OnConnexReady` mixin.
 
 ```typescript
 
 @ConnexContract({
   import: EnergyContractImport
 })
-export class EnergyTokenContract extends OnConnexReady {
+export class EnergyTokenContract {
   constructor() {
     super();
   }
