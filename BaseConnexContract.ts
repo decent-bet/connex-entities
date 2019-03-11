@@ -2,34 +2,42 @@
 /// <reference types="@vechain/connex" />
 
 import { abi } from 'thor-devkit';
-import { ContractImport } from './types';
+import { ContractImport, IConnexContract, IConnexOnReady } from './types';
 
 /**
- * Implements Connex helpers used either directly or with Connex contract decorators
+ * OnConnexReady implements call executed by plugin vendors to inject Connex
  */
-export class ContractService {
+export class OnConnexReady implements IConnexContract, IConnexOnReady {
+  public defaultAccount: string;
+  public connex: Connex;
+  public chainTag: string;
+  onConnexReady(connex: Connex, chainTag: string, defaultAccount: string) {
+    this.connex = connex;
+    this.chainTag = chainTag;
+    this.defaultAccount = defaultAccount;
+  }
+}
+
+/**
+ * BaseConnexContract is a mixin injected by ConnexContract decorator
+ */
+export class BaseConnexContract implements IConnexContract {
   private abi: Array<abi.Function.Definition | abi.Event.Definition>;
   public defaultAccount: string;
   public connex: Connex;
   public chainTag: string;
   
-  constructor(private contractImport: ContractImport) {
-    if (contractImport.raw) {
+  constructor(private contractImport?: ContractImport) {
+    if (contractImport && contractImport.raw) {
       this.setAbi(contractImport.raw);
     }
   }
 
-  __setConnexReady(connex: Connex, chainTag: string, defaultAccount: string) {
-    this.connex = connex;
-    this.chainTag = chainTag;
-    this.defaultAccount = defaultAccount;
-  }
-
-  public setAbi(val: any) {
+  protected setAbi(val: any) {
     this.abi = val.abi;
   }
 
-  public getAbiMethod(
+  protected getAbiMethod(
     name: string,
     address?: string
   ): object {
@@ -46,7 +54,7 @@ export class ContractService {
    * @param address contract address
    * @param methodAbi method ABI
    */
-  public getMethod(
+  protected getMethod(
     methodNameOrAbi: abi.Function.Definition | string,
     address?: string
   ): Connex.Thor.Method {
@@ -67,7 +75,7 @@ export class ContractService {
    * @param address contract address
    * @param eventAbi event ABI
    */
-  public getEvent(
+  protected getEvent(
     eventNameOrAbi: abi.Event.Definition | string,
     address?: string
   ): Connex.Thor.EventVisitor {

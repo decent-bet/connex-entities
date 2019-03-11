@@ -29,13 +29,12 @@ The following instance variables are available:
 
 * `$requestExternalWalletAccess`: Request access to external wallet
 * `$contractEntities`: The contract entities created after external wallet access sucess.
-* `$connex`: Access to the static ConnexService
 
 ```typescript
   async loginComet() {
     await this.$requestExternalWalletAccess();
-
-    const vthoBalance = await this.$contractEntities.Energy.balanceOf(this.$connex.defaultAccount);
+    const myAccount = this.$contractEntities.Energy.defaultAccount;
+    const vthoBalance = await this.$contractEntities.Energy.balanceOf(myAccount);
   }
 ```
 
@@ -57,20 +56,32 @@ const EnergyContractImport: ContractImport = {
 
 ### API
 
-#### @ConnexContract and IConnexContract
-A contract entity maps to a contract import using the `@ConnexContract` and inherits a `ContractService` instance. An `IConnexContract` interface is required to access this property.
+#### @ConnexContract
+A contract entity maps to a contract import using the `@ConnexContract` and base class `OnConnexReady`, which has an `IConnexContract` interface.
 
 ```typescript
 
 @ConnexContract({
   import: EnergyContractImport
 })
-export class EnergyTokenContract implements IConnexContract {
-  contractService: ContractService;
-  // ...
+export class EnergyTokenContract extends OnConnexReady {
+  constructor() {
+    super();
+  }
 }
 ```
 
+#### IConnexContract properties
+
+* connex
+* chainTag
+* defaultAccount
+
+#### OnConnexReady events
+
+* onConnexReady(connex, chainTag, defaultAccount)
+
+In most cases the base class will handle the basic scenario where a vendor wallet sets the connex and other properties.
 
 #### Contract Methods
 ##### @GetMethod

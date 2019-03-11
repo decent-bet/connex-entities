@@ -5,11 +5,19 @@
 import { timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { BigNumber } from 'bignumber.js';
-import { ContractService } from './ContractService';
 import { IValidationType, INewConnexContract, IConnexMethodOrEventCall, IConnexEventFilter, IConnexBlockchainEventFilter } from './types';
 import { AbiUtils } from './Utils';
+import { BaseConnexContract } from './BaseConnexContract';
 
 const ethereumRegex = require('ethereum-regex');
+
+function applyMixins(derivedCtor: any, baseCtors: any[]) {
+    baseCtors.forEach(baseCtor => {
+        Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
+            derivedCtor.prototype[name] = baseCtor.prototype[name];
+        });
+    });
+}
 
 /**
  * Annotation that creates a Connex enabled contract
@@ -18,8 +26,9 @@ const ethereumRegex = require('ethereum-regex');
 export function ConnexContract(params: INewConnexContract) {
   return <T extends { new (...args: any[]): {} }>(constructor: T) => {
     const c = class extends constructor {
-      contractService = new ContractService(params.import);
     };
+    applyMixins(c, [BaseConnexContract]);
+    c.prototype.setAbi(params.import);
     return c;
   };
 }
@@ -51,7 +60,7 @@ function validate(params: { [key: string]: IValidationType }, values: any[]): bo
 export function GetMethodSignature() {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
     descriptor.value = function () {
-      const abiMethod = this.contractService.getAbiMethod(propertyKey, null);
+      const abiMethod = this.getAbiMethod(propertyKey, null);
 
       let temp = `${propertyKey}()`;
       const types = abiMethod.inputs.map((i: any) => i.type);
@@ -68,7 +77,7 @@ export function GetMethodSignature() {
 export function GetEventSignature() {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
     descriptor.value = function () {
-      const abiMethod = this.contractService.getAbiMethod(propertyKey, null);
+      const abiMethod = this.getAbiMethod(propertyKey, null);
 
       let temp = `${propertyKey}()`;
       const types = abiMethod.inputs.map((i: any) => i.type);
@@ -94,7 +103,7 @@ export function GetMethod(options: IConnexMethodOrEventCall = {}) {
       if (typeof options.address === 'function') {
         addr = options.address();
       }
-      return this.contractService.getMethod(options.nameOrAbi || propertyKey, addr) as Promise<
+      return this.getMethod(options.nameOrAbi || propertyKey, addr) as Promise<
         Connex.Thor.VMOutput
       >;
     };
@@ -121,7 +130,7 @@ export function Read(options: IConnexMethodOrEventCall = {}) {
       }
 
       // Get Method
-      const call = this.contractService
+      const call = this
         .getMethod(options.nameOrAbi || propertyKey, addr)
         .call(...args);
 
@@ -155,13 +164,13 @@ export function Write(options: IConnexMethodOrEventCall = {}) {
         addr = options.address();
       }
 
-      const connex = this.contractService.connex;
+      const connex = this.connex;
       const signingService = connex.vendor.sign('tx')
-      signingService.signer(this.contractService.defaultAccount)
+      signingService.signer(this.defaultAccount)
       signingService.gas(options.gas || 80000); // Set maximum gas
 
       
-      const method = this.contractService
+      const method = this
         .getMethod(options.nameOrAbi || propertyKey, addr)
       
       let clause
@@ -199,12 +208,12 @@ export function MultiClauseWrite(options: IConnexMethodOrEventCall = {}) {
         addr = options.address();
       }
 
-      const connex = this.contractService.connex;
+      const connex = this.connex;
       const signingService = connex.vendor.sign('tx')
       signingService.signer(this.contractService.defaultAccount)
       signingService.gas(options.gas || 80000); // Set maximum gas
 
-      const m = this.contractService
+      const m = this
         .getMethod(options.nameOrAbi || propertyKey, addr);
 
       const thunk = original.apply(this, args);
@@ -227,7 +236,7 @@ export function GetEvent(options: IConnexMethodOrEventCall) {
       if (typeof options.address === 'function') {
         addr = options.address();
       }
-      return this.contractService.getEvent(options.nameOrAbi || propertyKey, addr) as Promise<
+      return this.getEvent(options.nameOrAbi || propertyKey, addr) as Promise<
         Connex.Thor.VMOutput
       >;
     };
@@ -252,7 +261,7 @@ export function AccountEventFilter(options: IConnexEventFilter) {
       if (typeof options.address === 'function') {
         addr = options.address();
       }
-      const eventInstance = this.contractService
+      const eventInstance = this
         .getEvent(options.nameOrAbi || propertyKey, addr);
 
       let filter: object;
