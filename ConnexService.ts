@@ -5,7 +5,7 @@ import { OnConnexReady } from "./BaseConnexContract";
 /// <reference types="@vechain/connex" />
 export const ACCOUNT_CHANGES_INTERVAL = 1_000;
 
-export interface GeneriContractFn<T> {
+export interface GenericContractFn<T> {
   (arg: T): T;
 }
 
@@ -17,7 +17,7 @@ export class ConnexService {
   public static contractInstances: any = {};
   
   public static getContract<T>(): T {
-    const contractIdentity: GeneriContractFn<T> = identityContract;
+    const contractIdentity: GenericContractFn<T> = identityContract;
     const items: string[] = Object.keys(ConnexService.contractInstances);
     const contractName = items.find((name) => name === contractIdentity.name);
     if (!contractName) {
