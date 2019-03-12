@@ -3,7 +3,7 @@
         "module": "commonjs",
         "esModuleInterop": true,
         "target": "es2016",
-        "noImplicitAny": false,
+        "noImplicitAny": true,
         "moduleResolution": "node",
         "sourceMap": false,
         "outDir": "lib",
