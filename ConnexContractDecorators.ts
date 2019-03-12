@@ -29,8 +29,8 @@ function applyMixins(derivedCtor: any, baseCtors: any[]) {
  * Annotation that creates a Connex enabled contract
  * @param params contract parameters
  */
-export function ConnexContract(params: INewConnexContract) {
-    return constructor => {
+export function ConnexContract(params: INewConnexContract): Function {
+    return (constructor: Function) => {
         applyMixins(constructor, [OnConnexReady]);
         constructor.prototype.setContractImport(params.import);
 
@@ -204,9 +204,6 @@ export function Write(options: IConnexMethodOrEventCall = {}) {
             );
 
             let clause;
-            if (args.length === 1) {
-                clause = method.asClause(args[0]);
-            }
             clause = method.asClause(...args);
 
             return signingService.request([
