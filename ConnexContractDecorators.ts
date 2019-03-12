@@ -2,7 +2,7 @@
 /* eslint-disable no-param-reassign */
 // eslint-disable-next-line spaced-comment
 /// <reference types="@vechain/connex" />
-import { timer } from 'rxjs';
+import { timer, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { BigNumber } from 'bignumber.js';
 import {
@@ -30,7 +30,7 @@ function applyMixins(derivedCtor: any, baseCtors: any[]) {
  * @param params contract parameters
  */
 export function ConnexContract(params: INewConnexContract) {
-    return (constructor: (...args: any[]) => void) => {
+    return <T extends {new (...args: any[]): {}}>(constructor: T) => {
         applyMixins(constructor, [OnConnexReady]);
         constructor.prototype.setContractImport(params.import);
 
@@ -295,7 +295,7 @@ export function AccountEventFilter(options: IConnexEventFilter) {
         descriptor: PropertyDescriptor
     ) => {
         const original = descriptor.value;
-        descriptor.value = async function(...args: any[]): Promise<any> {
+        descriptor.value = async function(...args: any[]): Promise<any | Observable<any>> {
             let addr = options.address;
             if (typeof options.address === 'function') {
                 addr = options.address();
@@ -323,13 +323,13 @@ export function AccountEventFilter(options: IConnexEventFilter) {
                 filter = eventInstance.filter(arr);
             }
             // apply filter and get thunk
-            const thunk = original.apply(this, args);
+            const thunk: (arg: any) => Promise<any> = original.apply(this, args);
 
             // poll if enabled
             if (options.interval) {
                 return timer(0, options.interval).pipe(
                     switchMap(i => thunk(filter))
-                );
+                ) as Observable<any>;
             }
 
             // run once filter
