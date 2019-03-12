@@ -29,8 +29,8 @@ function applyMixins(derivedCtor: any, baseCtors: any[]) {
  * Annotation that creates a Connex enabled contract
  * @param params contract parameters
  */
-export function ConnexContract(params: INewConnexContract): Function {
-    return (constructor: Function) => {
+export function ConnexContract(params: INewConnexContract) {
+    return (constructor: (...args: any[]) => void) => {
         applyMixins(constructor, [OnConnexReady]);
         constructor.prototype.setContractImport(params.import);
 
