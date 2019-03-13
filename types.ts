@@ -43,6 +43,7 @@ export interface IConnexEventFilter {
     interval?: number | null;
     validations?: IValidationParams;
     skipIndices?: boolean;
+    blockConfirmationUntil?: number;
 }
 
 /**
@@ -63,6 +64,7 @@ export interface IConnexOnReady {
 export interface IConnexBlockchainEventFilter {
     interval?: number | null;
     kind?: 'event' | 'transfer';
+    blockConfirmationUntil?: number;
 }
 
 export interface ContractSetting {

@@ -2,8 +2,8 @@
 /* eslint-disable no-param-reassign */
 // eslint-disable-next-line spaced-comment
 /// <reference types="@vechain/connex" />
-import { timer, Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { timer, Observable, from } from 'rxjs';
+import { switchMap, repeat } from 'rxjs/operators';
 import { BigNumber } from 'bignumber.js';
 import {
     IValidationType,
@@ -30,7 +30,7 @@ function applyMixins(derivedCtor: any, baseCtors: any[]) {
  * @param params contract parameters
  */
 export function ConnexContract(params: INewConnexContract) {
-    return <T extends {new (...args: any[]): {}}>(constructor: T) => {
+    return <T extends { new (...args: any[]): {} }>(constructor: T) => {
         applyMixins(constructor, [OnConnexReady]);
         constructor.prototype.setContractImport(params.import);
 
@@ -295,7 +295,12 @@ export function AccountEventFilter(options: IConnexEventFilter) {
         descriptor: PropertyDescriptor
     ) => {
         const original = descriptor.value;
-        descriptor.value = async function(...args: any[]): Promise<any | Observable<any>> {
+        descriptor.value = async function(
+            ...args: any[]
+        ): Promise<any | Observable<any>> {
+            let blockConfirmationCycles = options.blockConfirmationUntil || 12;
+            const blockConfirmation = this.connex.thor.ticker().next();
+
             let addr = options.address;
             if (typeof options.address === 'function') {
                 addr = options.address();
@@ -307,8 +312,6 @@ export function AccountEventFilter(options: IConnexEventFilter) {
 
             let filter: object;
             // Read filter indexed parameters
-            //      const opts = args[args.length - 1];
-            //      const keys = Object.keys(opts.indexed);
             if (options.skipIndices) {
                 filter = eventInstance.filter([]);
             } else {
@@ -323,17 +326,22 @@ export function AccountEventFilter(options: IConnexEventFilter) {
                 filter = eventInstance.filter(arr);
             }
             // apply filter and get thunk
-            const thunk: (arg: any) => Promise<any> = original.apply(this, args);
+            const thunk: (arg: any) => Promise<any> = original.apply(
+                this,
+                args
+            );
 
             // poll if enabled
-            if (options.interval) {
+            if (options.interval && options.blockConfirmationUntil === null) {
                 return timer(0, options.interval).pipe(
                     switchMap(i => thunk(filter))
                 ) as Observable<any>;
+            } else {
+                return from(blockConfirmation).pipe(
+                    repeat(blockConfirmationCycles),
+                    switchMap(_ => thunk(filter))
+                );
             }
-
-            // run once filter
-            return thunk(filter);
         };
         return descriptor;
     };
@@ -350,21 +358,27 @@ export function BlockchainEventFilter(options: IConnexBlockchainEventFilter) {
         descriptor: PropertyDescriptor
     ) => {
         const original = descriptor.value;
-        descriptor.value = async function(...args: any[]): Promise<any> {
+        descriptor.value = async function(...args: any[]): Promise<any | Observable<any>>  {
             const filter = connex.thor.filter(options.kind);
+            let blockConfirmationCycles = options.blockConfirmationUntil || 12;
+            const blockConfirmation = connex.thor.ticker().next();
 
             // apply filter and get thunk
-            const thunk = original.apply(this, args);
-
+            const thunk: (arg: any) => Promise<any> = original.apply(
+                this,
+                args
+            );
             // poll if enabled
-            if (options.interval) {
+            if (options.interval && options.blockConfirmationUntil === null) {
                 return timer(0, options.interval).pipe(
                     switchMap(i => thunk(filter))
+                ) as Observable<any>;
+            } else {
+                return from(blockConfirmation).pipe(
+                    repeat(blockConfirmationCycles),
+                    switchMap(_ => thunk(filter))
                 );
             }
-
-            // run once filter
-            return thunk(filter);
         };
         return descriptor;
     };
