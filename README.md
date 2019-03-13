@@ -196,8 +196,17 @@ A contract event filter, it can run once or by polling. A thunk function  is req
       return filter.apply(0, 5);
     };
   }
-
 ```
+
+##### Properties
+
+* `nameOrAbi(abi.Event.Definition | abi.Function.Definition | string)`: ABI definition name or ABI definition. Defaults to method name.
+* `address(string)`: Contract address.
+* `interval(number)`: Polls event every n seconds. To enabled, set `blockConfirmationUntil` to null.
+* `skipIndices`: Skip calling event with indexed arguments.
+* `validations(object):` Validate arguments.
+* `blockConfirmationUntil(number)`: Waits for n block confirmation before calling log event. Runs once. Default is 12 block confirmation.
+
 
 #### Blockchain Events
 ##### @BlockchainEventFilter
