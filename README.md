@@ -225,6 +225,11 @@ Polls an event or transfer. A thunk function  is required which gets a Filter in
   }
 ```
 
+##### Properties
+
+* `nameOrAbi(abi.Event.Definition | abi.Function.Definition | string)`: ABI definition name or ABI definition. Defaults to method name.
+* `kind(string)`: Log type, either 'transfer' or 'event'.
+
 
 #### Utils
 ##### @GetEventSignature
@@ -242,3 +247,15 @@ Returns a method signature
   public transfer() {
   }
 ```
+
+## Best Practices
+
+### Use `vuex-connex-entities` for state management integration
+With this plugin you can create contracs in a type safe way without using undocumented `this._vm` inside an action to access `$contractEntities`. 
+
+### Contract entities should be lean
+Contract entities helps with working with Connex and Thor, any business logic should be decoupled. 
+
+### Use a shared module to package contract entities
+A shared module contains ABI assets and/or contract entities classes for a set of contracts, the shared module can be deployed to npm or a git submodule and linked to one or more projects.
+
