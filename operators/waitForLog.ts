@@ -5,6 +5,11 @@ import { Observable, Observer } from 'rxjs';
 import { blockConfirmationUntil } from './blockConfirmationUntil';
 import { switchMap } from 'rxjs/operators';
 
+/**
+ * waitForLog operators takes a contract write function and an event log function and waits until confirmation to return logs back
+ * @param writeFn 
+ * @param eventLogFn 
+ */
 export const waitForLog = (
     writeFn: Promise<Connex.Vendor.SigningService.TxResponse>,
     eventLogFn: Promise<any>

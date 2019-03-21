@@ -1,6 +1,5 @@
 ### Connex Entities
 
-
 Connex entity contracts allows mapping of contract entities and uses a middleware (Vue plugin) to connect
 to Comet and Connex.
 
@@ -202,10 +201,9 @@ A contract event filter, it can run once or by polling. A thunk function  is req
 
 * `nameOrAbi(abi.Event.Definition | abi.Function.Definition | string)`: ABI definition name or ABI definition. Defaults to method name.
 * `address(string)`: Contract address.
-* `interval(number)`: Polls event every n seconds. To enabled, set `blockConfirmationUntil` to null.
+* `interval(number)`: Polls event every n seconds.
 * `skipIndices`: Skip calling event with indexed arguments.
 * `validations(object):` Validate arguments.
-* `blockConfirmationUntil(number)`: Waits for n block confirmation before calling log event. Runs once. Default is 12 block confirmation.
 
 
 #### Blockchain Events
@@ -247,6 +245,35 @@ Returns a method signature
   public transfer() {
   }
 ```
+
+#### RxJS Operators
+##### blockConfirmationUntil
+Waits until transaction is confirmed
+```typescript
+    const resp = await token.approve(...);
+    const logs: any = await token.approvalLog$([]);
+    // creates observable 
+    const blockConfirmation = blockConfirmationUntil(resp.txid);
+
+    // once complete, continue with other pipes
+    return blockConfirmation
+      .pipe(
+        switchMap(_ => logs)
+      )
+      .subscribe(async (i: any) => {
+        console.log(i);
+      });
+```
+
+##### waitForLog
+Takes a contract write function promise and an event log function promise and waits until confirmation to return logs back
+```typescript
+    const approve = token.approve(...);
+    const logs: any = token.approvalLog$([]);
+    return waitForLog(approve, logs)
+      .subscribe((log: any) => { ... });
+```
+
 
 ## Best Practices
 
