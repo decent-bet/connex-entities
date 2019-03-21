@@ -3,15 +3,19 @@
 
 import { Observable, Observer } from 'rxjs';
 
+/**
+ * blockConfirmationUntil operator waits until transaction is confirmed
+ * @param transactionId transaction id
+ */
 export const blockConfirmationUntil = (transactionId: string) =>
     Observable.create(async (observer: Observer<boolean>) => {
         let block: Connex.Thor.Block = await connex.thor.block().get();
-        let hasBlock = block.transactions.indexOf(transactionId) > -1;
+        let hasBlock = await connex.thor.transaction(transactionId).get();
         while (!hasBlock) {
             await connex.thor.ticker().next();
             block = await connex.thor.block().get();
-            hasBlock = block.transactions.indexOf(transactionId) > -1;
+            hasBlock = await connex.thor.transaction(transactionId).get();
         }
-        observer.next(hasBlock);
+        observer.next(!!hasBlock);
         observer.complete();
     });
