@@ -298,9 +298,6 @@ export function AccountEventFilter(options: IConnexEventFilter) {
         descriptor.value = async function(
             ...args: any[]
         ): Promise<any | Observable<any>> {
-            let blockConfirmationCycles = options.blockConfirmationUntil || 12;
-            const blockConfirmation = this.connex.thor.ticker().next();
-
             let addr = options.address;
             if (typeof options.address === 'function') {
                 addr = options.address();
@@ -332,15 +329,12 @@ export function AccountEventFilter(options: IConnexEventFilter) {
             );
 
             // poll if enabled
-            if (options.interval && options.blockConfirmationUntil === null) {
+            if (options.interval) {
                 return timer(0, options.interval).pipe(
                     switchMap(i => thunk(filter))
                 ) as Observable<any>;
             } else {
-                return from(blockConfirmation).pipe(
-                    repeat(blockConfirmationCycles),
-                    switchMap(_ => thunk(filter))
-                );
+                return thunk(filter);
             }
         };
         return descriptor;
@@ -360,8 +354,6 @@ export function BlockchainEventFilter(options: IConnexBlockchainEventFilter) {
         const original = descriptor.value;
         descriptor.value = async function(...args: any[]): Promise<any | Observable<any>>  {
             const filter = connex.thor.filter(options.kind);
-            let blockConfirmationCycles = options.blockConfirmationUntil || 12;
-            const blockConfirmation = connex.thor.ticker().next();
 
             // apply filter and get thunk
             const thunk: (arg: any) => Promise<any> = original.apply(
@@ -369,15 +361,12 @@ export function BlockchainEventFilter(options: IConnexBlockchainEventFilter) {
                 args
             );
             // poll if enabled
-            if (options.interval && options.blockConfirmationUntil === null) {
+            if (options.interval) {
                 return timer(0, options.interval).pipe(
                     switchMap(i => thunk(filter))
                 ) as Observable<any>;
             } else {
-                return from(blockConfirmation).pipe(
-                    repeat(blockConfirmationCycles),
-                    switchMap(_ => thunk(filter))
-                );
+                return thunk(filter);
             }
         };
         return descriptor;

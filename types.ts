@@ -43,7 +43,6 @@ export interface IConnexEventFilter {
     interval?: number | null;
     validations?: IValidationParams;
     skipIndices?: boolean;
-    blockConfirmationUntil?: number;
 }
 
 /**
