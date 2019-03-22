@@ -7,8 +7,8 @@ import { switchMap } from 'rxjs/operators';
 
 /**
  * waitForLog operators takes a contract write function and an event log function and waits until confirmation to return logs back
- * @param writeFn 
- * @param eventLogFn 
+ * @param writeFn
+ * @param eventLogFn
  */
 export const waitForLog = (
     writeFn: Promise<Connex.Vendor.SigningService.TxResponse>,
@@ -21,7 +21,11 @@ export const waitForLog = (
 
         // pipe eventLogFn
         const logs: any = await eventLogFn;
-        blockConfirmation
-            .pipe(switchMap(_ => logs))
-            .subscribe(observer.next, observer.error, observer.complete);
+        blockConfirmation.pipe(switchMap(_ => logs)).subscribe(
+            observer.next,
+            (e: any) => observer.error,
+            () => {
+                observer.complete();
+            }
+        );
     });
