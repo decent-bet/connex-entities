@@ -166,11 +166,17 @@ Returns an error if a validation fails, otherwise continues with call execution.
 A contract event filter, it can run once or by polling. A thunk function  is required which gets a Filter instance. Returns an Observable if interval is used, else a Promise.
 
 ```typescript
+  const topics = ConnexTopic.address('0x')
+  .or(
+    ConnexTopic.topic0(energy.topics.LogTransfer.getEventSignature())
+    .and(energy.topics.LogApprove.getTopicAt(1))
+  );
+
   @AccountEventFilter({
     nameOrAbi: 'Transfer',
     interval: 10_000,
   })
-  public getTransfers$(indices: Array<object>, options: AccountEventFilterOptions) {
+  public getTransfers$(topics: ConnexTopics, options: AccountEventFilterOptions) {
     return (filter: Connex.Thor.Filter<'event'>) => {
       filter.order('asc');
 
@@ -182,7 +188,7 @@ A contract event filter, it can run once or by polling. A thunk function  is req
     nameOrAbi: 'Transfer',
     address: () => EnergyContractImport.address[ConnexService.chainTag],
   })
-  public getTransfers(indices: Array<object>, options: AccountEventFilterOptions) {
+  public getTransfers(topics: ConnexTopics, options: AccountEventFilterOptions) {
     return (filter: Connex.Thor.Filter<'event'>) => {
       filter
         .order('asc')
@@ -230,21 +236,14 @@ Polls an event or transfer. A thunk function  is required which gets a Filter in
 
 
 #### Utils
-##### @GetEventSignature
+##### getEventSignature
 Returns an event signature
 ```typescript
-  @GetEventSignature()
-  public Transfer() {
-  }
+  energyContract.topics.name.getEventSignature()
 ```
 
 ##### @GetMethodSignature
-Returns a method signature
-```typescript
-  @GetMethodSignature()
-  public transfer() {
-  }
-```
+DEPRECATED
 
 #### RxJS Operators
 ##### blockConfirmationUntil

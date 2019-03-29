@@ -318,6 +318,8 @@ export function AccountEventFilter(options: IConnexEventFilter) {
                 if (options.validations) {
                     validate(options.validations, arr);
                 }
+                // TODO: Criteria calls goes here
+                // Loop thru topics arg and generate criteria
 
                 // create filter
                 filter = eventInstance.filter(arr);
